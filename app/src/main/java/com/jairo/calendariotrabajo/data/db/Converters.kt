@@ -5,6 +5,9 @@ import com.jairo.calendariotrabajo.data.model.HolidayScope
 import com.jairo.calendariotrabajo.data.model.Shift
 import java.time.LocalDate
 
+//SQL Lite no sabe que son los enum de Kotlin, solo entiende tipos primitivos
+//Room solo sabe guardar tipos simples (String, Int, Boolean), para que entienda que queremos guardar datos como un Enum, o un LocalDate, --> clase converters
+// es una clase con métodos anotados @TypeConverter que le dicen a room como convertir de ida y vuelta.
 class Converters {
 
     @TypeConverter

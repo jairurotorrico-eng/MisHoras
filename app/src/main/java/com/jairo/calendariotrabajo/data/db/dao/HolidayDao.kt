@@ -14,6 +14,9 @@ interface HolidayDao {
     @Query("SELECT * FROM holidays ORDER BY date ASC")
     fun observeAll(): Flow<List<HolidayEntity>>
 
+    @Query("SELECT * FROM holidays ORDER BY date ASC")
+    suspend fun getAll(): List<HolidayEntity>
+
     @Query("SELECT * FROM holidays WHERE date = :date")
     suspend fun getByDate(date: LocalDate): HolidayEntity?
 

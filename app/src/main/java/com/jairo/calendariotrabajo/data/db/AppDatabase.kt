@@ -14,7 +14,9 @@ import com.jairo.calendariotrabajo.data.db.entity.SalaryRatesEntity
 import com.jairo.calendariotrabajo.data.db.entity.ShiftPatternEntity
 import com.jairo.calendariotrabajo.data.db.entity.WorkDayEntity
 
-@Database(
+//Esta clase es el contenedor, se instacia como singleton en MisHorasApplication
+
+@Database( //Declaramos que entidades forman parte de la base de datos y versión tiene
     entities = [
         WorkDayEntity::class,
         SalaryRatesEntity::class,
@@ -24,6 +26,8 @@ import com.jairo.calendariotrabajo.data.db.entity.WorkDayEntity
     version = 1,
     exportSchema = false
 )
+
+//Exponemos las DAOS como funciones abstractas
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -32,18 +36,21 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun shiftPatternDao(): ShiftPatternDao
     abstract fun holidayDao(): HolidayDao
 
-    companion object {
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
+    //IMPORTANTE!
+    //Abrir una base de datos es pesado, por eso debemos de asegurarnos de abrir una instancia nueva cada vez que lo necesitamos. Una sola instancia compartida para toda la app
+    companion object { //patrón companion object con singleton
+        @Volatile //asegura que todos los hilos vean siempre el valor mas actualizado de INSTANCE
+        private var INSTANCE: AppDatabase? = null  //(evita problemas de concurrencia al leer)
 
         fun getInstance(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
+            return INSTANCE ?: synchronized(this) { //asegura de que si dos hilos piden la base de datos solo se la crea una y la otra esta en espera y reutiliza la misma
                 Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "mishoras.db"
-                ).build().also { INSTANCE = it }
-            }
+                ).build().also { INSTANCE = it } //also es una funcion scope (ámbito) de kotlin, coge el objeto que tiene delante, el cual ajecuta dentro de {} como it y luego devuelve el mismo objeto sin modificarlo
+            }                                    //Aquí se usa como un atajo para "de paso que construyo la base de datos, aprovecho para guardarla en INSTANCE, y
+                                            // luego sigo devolviendo la base de datos como resultado de la función"
         }
     }
 }
