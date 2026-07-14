@@ -10,6 +10,7 @@ import com.jairo.calendariotrabajo.data.db.entity.WorkDayEntity
 import com.jairo.calendariotrabajo.data.model.Shift
 import com.jairo.calendariotrabajo.data.repository.HolidayRepository
 import com.jairo.calendariotrabajo.data.repository.SalaryRatesRepository
+import com.jairo.calendariotrabajo.data.repository.ShiftPatternRepository
 import com.jairo.calendariotrabajo.data.repository.WorkDayRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +24,8 @@ class DayDetailViewModel(
     private val date: LocalDate,
     private val workDayRepository: WorkDayRepository,
     private val salaryRatesRepository: SalaryRatesRepository,
-    private val holidayRepository: HolidayRepository
+    private val holidayRepository: HolidayRepository,
+    private val shiftPatternRepository: ShiftPatternRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DayDetailUiState.initial(date))
@@ -39,12 +41,16 @@ class DayDetailViewModel(
         val existing = workDayRepository.getByDate(date)
         val rates = salaryRatesRepository.getOrCreateDefault()
         val isHolidayAuto = holidayRepository.isHoliday(date)
+        val pattern = shiftPatternRepository.get()
+        val defaultShift = pattern?.let {
+            shiftPatternRepository.expectedShiftFor(date, it)
+        } ?: Shift.MANANA
         currentRates = rates
 
         _uiState.update { current ->
             current.copy(
                 didWork = existing?.didWork ?: true,
-                shift = existing?.shift ?: Shift.MANANA,
+                shift = existing?.shift ?: defaultShift,
                 hours = existing?.hours ?: rates.standardDayHours.toDouble(),
                 isHoliday = existing?.isHoliday ?: isHolidayAuto,
                 isFullExtraDay = existing?.isFullExtraDay ?: false,
@@ -136,10 +142,17 @@ class DayDetailViewModel(
             date: LocalDate,
             workDayRepository: WorkDayRepository,
             salaryRatesRepository: SalaryRatesRepository,
-            holidayRepository: HolidayRepository
+            holidayRepository: HolidayRepository,
+            shiftPatternRepository: ShiftPatternRepository
         ): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                DayDetailViewModel(date, workDayRepository, salaryRatesRepository, holidayRepository)
+                DayDetailViewModel(
+                    date,
+                    workDayRepository,
+                    salaryRatesRepository,
+                    holidayRepository,
+                    shiftPatternRepository
+                )
             }
         }
     }

@@ -9,6 +9,7 @@ object Routes {
     const val HISTORY = "history"
     const val SETTINGS = "settings"
     const val RATES = "settings/rates"
+    const val ONBOARDING = "onboarding"
 
     const val DAY_DETAIL_PATTERN = "day_detail/{date}"
     const val DAY_DETAIL_ARG = "date"
