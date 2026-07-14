@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -34,21 +35,28 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jairo.calendariotrabajo.domain.calculator.SalaryBreakdown
 import java.text.NumberFormat
+import java.time.LocalDate
 import java.util.Locale
 import kotlin.math.roundToInt
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    onNavigateToDayDetail: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    HomeContent(uiState = uiState, modifier = modifier)
+    HomeContent(
+        uiState = uiState,
+        onApuntarHoy = { onNavigateToDayDetail(LocalDate.now()) },
+        modifier = modifier
+    )
 }
 
 @Composable
 private fun HomeContent(
     uiState: HomeUiState,
+    onApuntarHoy: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showSalary by rememberSaveable { mutableStateOf(true) }
@@ -72,6 +80,19 @@ private fun HomeContent(
             visible = showSalary,
             onToggleVisible = { showSalary = !showSalary }
         )
+
+        Button(
+            onClick = onApuntarHoy,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text(
+                text = "Apuntar día de hoy",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }
 
