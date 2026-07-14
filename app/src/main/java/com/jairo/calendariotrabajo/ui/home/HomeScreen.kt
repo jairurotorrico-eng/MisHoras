@@ -49,6 +49,7 @@ fun HomeScreen(
     onNavigateToDayDetail: (LocalDate) -> Unit,
     onNavigateToCalendar: () -> Unit,
     onNavigateToHistory: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -57,6 +58,7 @@ fun HomeScreen(
         onApuntarHoy = { onNavigateToDayDetail(LocalDate.now()) },
         onVerCalendario = onNavigateToCalendar,
         onVerHistorial = onNavigateToHistory,
+        onAjustes = onNavigateToSettings,
         modifier = modifier
     )
 }
@@ -67,6 +69,7 @@ private fun HomeContent(
     onApuntarHoy: () -> Unit,
     onVerCalendario: () -> Unit,
     onVerHistorial: () -> Unit,
+    onAjustes: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showSalary by rememberSaveable { mutableStateOf(true) }
@@ -78,7 +81,7 @@ private fun HomeContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        HomeHeader(monthLabel = uiState.monthLabel)
+        HomeHeader(monthLabel = uiState.monthLabel, onSettingsClick = onAjustes)
 
         HoursCard(
             hours = uiState.hoursThisMonth,
@@ -141,7 +144,7 @@ private fun HomeContent(
 }
 
 @Composable
-private fun HomeHeader(monthLabel: String) {
+private fun HomeHeader(monthLabel: String, onSettingsClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -160,7 +163,7 @@ private fun HomeHeader(monthLabel: String) {
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
-        IconButton(onClick = { /* pantalla Ajustes — próximo paso */ }) {
+        IconButton(onClick = onSettingsClick) {
             Icon(
                 imageVector = Icons.Outlined.Settings,
                 contentDescription = "Ajustes"

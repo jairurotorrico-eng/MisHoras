@@ -17,6 +17,9 @@ import com.jairo.calendariotrabajo.ui.history.HistoryScreen
 import com.jairo.calendariotrabajo.ui.history.HistoryViewModel
 import com.jairo.calendariotrabajo.ui.home.HomeScreen
 import com.jairo.calendariotrabajo.ui.home.HomeViewModel
+import com.jairo.calendariotrabajo.ui.settings.RatesEditScreen
+import com.jairo.calendariotrabajo.ui.settings.RatesEditViewModel
+import com.jairo.calendariotrabajo.ui.settings.SettingsScreen
 import java.time.LocalDate
 
 //El NavHost decide que pantalla toca según la ruta
@@ -49,7 +52,27 @@ fun AppNavGraph(
                 },
                 onNavigateToHistory = {
                     navController.navigate(Routes.HISTORY)
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Routes.SETTINGS)
                 }
+            )
+        }
+
+        composable(Routes.SETTINGS) {
+            SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToRates = { navController.navigate(Routes.RATES) }
+            )
+        }
+
+        composable(Routes.RATES) {
+            val ratesViewModel: RatesEditViewModel = viewModel(
+                factory = RatesEditViewModel.factory(app.salaryRatesRepository)
+            )
+            RatesEditScreen(
+                viewModel = ratesViewModel,
+                onBack = { navController.popBackStack() }
             )
         }
 
