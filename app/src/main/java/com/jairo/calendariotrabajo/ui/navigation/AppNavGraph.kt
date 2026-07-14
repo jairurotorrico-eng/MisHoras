@@ -29,6 +29,7 @@ import com.jairo.calendariotrabajo.ui.onboarding.OnboardingViewModel
 import com.jairo.calendariotrabajo.ui.settings.RatesEditScreen
 import com.jairo.calendariotrabajo.ui.settings.RatesEditViewModel
 import com.jairo.calendariotrabajo.ui.settings.SettingsScreen
+import com.jairo.calendariotrabajo.ui.settings.SettingsViewModel
 import java.time.LocalDate
 
 //El NavHost decide que pantalla toca según la ruta
@@ -96,7 +97,14 @@ fun AppNavGraph(
         }
 
         composable(Routes.SETTINGS) {
+            val settingsViewModel: SettingsViewModel = viewModel(
+                factory = SettingsViewModel.factory(
+                    appPreferences = app.appPreferences,
+                    reminderScheduler = app.reminderScheduler
+                )
+            )
             SettingsScreen(
+                viewModel = settingsViewModel,
                 onBack = { navController.popBackStack() },
                 onNavigateToRates = { navController.navigate(Routes.RATES) }
             )

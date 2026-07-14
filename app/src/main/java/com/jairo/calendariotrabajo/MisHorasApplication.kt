@@ -2,16 +2,22 @@ package com.jairo.calendariotrabajo
 
 import android.app.Application
 import com.jairo.calendariotrabajo.data.db.AppDatabase
+import com.jairo.calendariotrabajo.data.preferences.AppPreferences
 import com.jairo.calendariotrabajo.data.repository.HolidayRepository
 import com.jairo.calendariotrabajo.data.repository.SalaryRatesRepository
 import com.jairo.calendariotrabajo.data.repository.ShiftPatternRepository
 import com.jairo.calendariotrabajo.data.repository.WorkDayRepository
+import com.jairo.calendariotrabajo.notifications.ReminderScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+//EntryPoint Que Habre La Base de Datos. Extiende de Application (clase base de Android que se instancia una sola vez antes que cualquier activity)
+//Usamos esta clase para crear una única instancia de la base de datos en cuanto la app arranca y tenerla disponible desde el inicio.
+//Clase ideal para para inicializar todo lo que quieras que viva mientras la app viva
 class MisHorasApplication : Application() {
 
     val database: AppDatabase by lazy { AppDatabase.getInstance(this) }
@@ -32,9 +38,12 @@ class MisHorasApplication : Application() {
         ShiftPatternRepository(database.shiftPatternDao())
     }
 
+    val appPreferences: AppPreferences by lazy { AppPreferences(this) }
+
+    val reminderScheduler: ReminderScheduler by lazy { ReminderScheduler(this) }
+
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-//lazamos 3 cosas en la corrutina de arranque -->1.Siembra festicos 2.Crea las tarifas por defecto 3.Elimina registtros viejos. Secuenciales pero todo dentro
-    // de una corrutina Dispatches.IO
+
     override fun onCreate() {
         super.onCreate()
         applicationScope.launch {
@@ -42,6 +51,12 @@ class MisHorasApplication : Application() {
             holidayRepository.ensureSeededFor((currentYear..currentYear + 4).toList())
             salaryRatesRepository.getOrCreateDefault()
             workDayRepository.pruneOlderThan(monthsToKeep = 6)
+
+            val enabled = appPreferences.notificationsEnabled.first()
+            val hour = appPreferences.reminderHour.first()
+            if (enabled) {
+                reminderScheduler.schedule(hour = hour)
+            }
         }
     }
 }
