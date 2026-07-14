@@ -15,6 +15,9 @@ class WorkDayRepository(private val workDayDao: WorkDayDao) {
         return workDayDao.observeRange(start, end)
     }
 
+    fun observeRange(start: LocalDate, end: LocalDate): Flow<List<WorkDayEntity>> =
+        workDayDao.observeRange(start, end)
+
     suspend fun getByDate(date: LocalDate): WorkDayEntity? =
         workDayDao.getByDate(date)
 

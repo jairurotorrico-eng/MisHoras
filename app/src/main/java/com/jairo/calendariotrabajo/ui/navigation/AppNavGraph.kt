@@ -13,6 +13,8 @@ import com.jairo.calendariotrabajo.ui.calendar.CalendarScreen
 import com.jairo.calendariotrabajo.ui.calendar.CalendarViewModel
 import com.jairo.calendariotrabajo.ui.dayDetail.DayDetailScreen
 import com.jairo.calendariotrabajo.ui.dayDetail.DayDetailViewModel
+import com.jairo.calendariotrabajo.ui.history.HistoryScreen
+import com.jairo.calendariotrabajo.ui.history.HistoryViewModel
 import com.jairo.calendariotrabajo.ui.home.HomeScreen
 import com.jairo.calendariotrabajo.ui.home.HomeViewModel
 import java.time.LocalDate
@@ -44,7 +46,23 @@ fun AppNavGraph(
                 },
                 onNavigateToCalendar = {
                     navController.navigate(Routes.CALENDAR)
+                },
+                onNavigateToHistory = {
+                    navController.navigate(Routes.HISTORY)
                 }
+            )
+        }
+
+        composable(Routes.HISTORY) {
+            val historyViewModel: HistoryViewModel = viewModel(
+                factory = HistoryViewModel.factory(
+                    workDayRepository = app.workDayRepository,
+                    salaryRatesRepository = app.salaryRatesRepository
+                )
+            )
+            HistoryScreen(
+                viewModel = historyViewModel,
+                onBack = { navController.popBackStack() }
             )
         }
 

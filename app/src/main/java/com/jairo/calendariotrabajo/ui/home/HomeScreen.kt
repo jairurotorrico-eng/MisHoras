@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -47,6 +48,7 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     onNavigateToDayDetail: (LocalDate) -> Unit,
     onNavigateToCalendar: () -> Unit,
+    onNavigateToHistory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -54,6 +56,7 @@ fun HomeScreen(
         uiState = uiState,
         onApuntarHoy = { onNavigateToDayDetail(LocalDate.now()) },
         onVerCalendario = onNavigateToCalendar,
+        onVerHistorial = onNavigateToHistory,
         modifier = modifier
     )
 }
@@ -63,6 +66,7 @@ private fun HomeContent(
     uiState: HomeUiState,
     onApuntarHoy: () -> Unit,
     onVerCalendario: () -> Unit,
+    onVerHistorial: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showSalary by rememberSaveable { mutableStateOf(true) }
@@ -100,21 +104,38 @@ private fun HomeContent(
             )
         }
 
-        OutlinedButton(
-            onClick = onVerCalendario,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(
-                imageVector = Icons.Outlined.CalendarMonth,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Text(
-                text = "  Ver calendario del mes",
-                fontSize = 14.sp
-            )
+            OutlinedButton(
+                onClick = onVerCalendario,
+                modifier = Modifier.weight(1f).height(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.CalendarMonth,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(
+                    text = "  Calendario",
+                    fontSize = 14.sp
+                )
+            }
+            OutlinedButton(
+                onClick = onVerHistorial,
+                modifier = Modifier.weight(1f).height(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.History,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(
+                    text = "  Historial",
+                    fontSize = 14.sp
+                )
+            }
         }
     }
 }
