@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,12 +46,14 @@ import kotlin.math.roundToInt
 fun HomeScreen(
     viewModel: HomeViewModel,
     onNavigateToDayDetail: (LocalDate) -> Unit,
+    onNavigateToCalendar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     HomeContent(
         uiState = uiState,
         onApuntarHoy = { onNavigateToDayDetail(LocalDate.now()) },
+        onVerCalendario = onNavigateToCalendar,
         modifier = modifier
     )
 }
@@ -57,6 +62,7 @@ fun HomeScreen(
 private fun HomeContent(
     uiState: HomeUiState,
     onApuntarHoy: () -> Unit,
+    onVerCalendario: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showSalary by rememberSaveable { mutableStateOf(true) }
@@ -91,6 +97,23 @@ private fun HomeContent(
                 text = "Apuntar día de hoy",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
+            )
+        }
+
+        OutlinedButton(
+            onClick = onVerCalendario,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.CalendarMonth,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Text(
+                text = "  Ver calendario del mes",
+                fontSize = 14.sp
             )
         }
     }

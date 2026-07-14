@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.jairo.calendariotrabajo.MisHorasApplication
+import com.jairo.calendariotrabajo.ui.calendar.CalendarScreen
+import com.jairo.calendariotrabajo.ui.calendar.CalendarViewModel
 import com.jairo.calendariotrabajo.ui.dayDetail.DayDetailScreen
 import com.jairo.calendariotrabajo.ui.dayDetail.DayDetailViewModel
 import com.jairo.calendariotrabajo.ui.home.HomeScreen
@@ -38,6 +40,26 @@ fun AppNavGraph(
             HomeScreen(
                 viewModel = homeViewModel,
                 onNavigateToDayDetail = { date ->
+                    navController.navigate(Routes.dayDetail(date))
+                },
+                onNavigateToCalendar = {
+                    navController.navigate(Routes.CALENDAR)
+                }
+            )
+        }
+
+        composable(Routes.CALENDAR) {
+            val calendarViewModel: CalendarViewModel = viewModel(
+                factory = CalendarViewModel.factory(
+                    workDayRepository = app.workDayRepository,
+                    holidayRepository = app.holidayRepository,
+                    salaryRatesRepository = app.salaryRatesRepository
+                )
+            )
+            CalendarScreen(
+                viewModel = calendarViewModel,
+                onBack = { navController.popBackStack() },
+                onDayClick = { date ->
                     navController.navigate(Routes.dayDetail(date))
                 }
             )
