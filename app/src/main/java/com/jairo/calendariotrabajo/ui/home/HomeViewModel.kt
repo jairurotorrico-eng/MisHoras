@@ -39,8 +39,13 @@ class HomeViewModel(
         workDays: List<WorkDayEntity>,
         rates: SalaryRatesEntity?
     ): HomeUiState {
-        val hoursWorked = workDays.filter { it.didWork }.sumOf { it.hours }
+        val workedList = workDays.filter { it.didWork }
+        val hoursWorked = workedList.sumOf { it.hours }
+        val daysWorked = workedList.size
         val breakdown = rates?.let { calculator.calculate(workDays, it) }
+        val extrasPay = breakdown?.let {
+            it.extraHoursPay + it.nightPlusPay + it.sundaysPay + it.formationPay
+        } ?: 0.0
         val expected = rates?.let { (today.lengthOfMonth() / 7.0) * it.maxWeeklyHours } ?: 0.0
 
         return HomeUiState(
@@ -49,6 +54,8 @@ class HomeViewModel(
             monthLabel = formatMonthLabel(today),
             hoursThisMonth = hoursWorked,
             expectedMonthlyHours = expected,
+            daysWorked = daysWorked,
+            extrasPay = extrasPay,
             salaryBreakdown = breakdown,
             loading = false
         )

@@ -18,10 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -41,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jairo.calendariotrabajo.data.model.Shift
+import com.jairo.calendariotrabajo.ui.common.iconForShift
 import java.time.LocalDate
 import kotlin.math.roundToInt
 
@@ -241,12 +239,6 @@ private fun CalendarCell(
     }
 }
 
-private fun iconForShift(shift: Shift): ImageVector = when (shift) {
-    Shift.MANANA -> Icons.Outlined.WbSunny
-    Shift.TARDE -> Icons.Outlined.LightMode
-    Shift.NOCHE -> Icons.Outlined.DarkMode
-}
-
 @Composable
 private fun MonthSummaryCard(summary: MonthSummary) {
     Card(
@@ -292,9 +284,9 @@ private fun Legend() {
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        LegendItem(Icons.Outlined.WbSunny, "Mañana")
-        LegendItem(Icons.Outlined.LightMode, "Tarde")
-        LegendItem(Icons.Outlined.DarkMode, "Noche")
+        LegendItem(iconForShift(Shift.MANANA), "Mañana")
+        LegendItem(iconForShift(Shift.TARDE), "Tarde")
+        LegendItem(iconForShift(Shift.NOCHE), "Noche")
         LegendItem(Icons.Outlined.Star, "Extra", MaterialTheme.colorScheme.tertiary)
         LegendItem(null, "Festivo", MaterialTheme.colorScheme.error, isDot = true)
     }

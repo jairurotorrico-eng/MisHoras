@@ -11,6 +11,8 @@ data class HomeUiState(
     val monthLabel: String,
     val hoursThisMonth: Double,
     val expectedMonthlyHours: Double,
+    val daysWorked: Int,
+    val extrasPay: Double,
     val salaryBreakdown: SalaryBreakdown?,
     val loading: Boolean = false
 ) {
@@ -21,6 +23,8 @@ data class HomeUiState(
             monthLabel = formatMonthLabel(date),
             hoursThisMonth = 0.0,
             expectedMonthlyHours = 0.0,
+            daysWorked = 0,
+            extrasPay = 0.0,
             salaryBreakdown = null,
             loading = true
         )

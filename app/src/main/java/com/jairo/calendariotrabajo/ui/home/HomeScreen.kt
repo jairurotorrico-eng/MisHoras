@@ -72,7 +72,7 @@ private fun HomeContent(
     onAjustes: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showSalary by rememberSaveable { mutableStateOf(true) }
+    var showSalary by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -85,11 +85,13 @@ private fun HomeContent(
 
         HoursCard(
             hours = uiState.hoursThisMonth,
-            expected = uiState.expectedMonthlyHours
+            expected = uiState.expectedMonthlyHours,
+            daysWorked = uiState.daysWorked
         )
 
         SalaryCard(
             breakdown = uiState.salaryBreakdown,
+            extrasPay = uiState.extrasPay,
             visible = showSalary,
             onToggleVisible = { showSalary = !showSalary }
         )
@@ -173,7 +175,7 @@ private fun HomeHeader(monthLabel: String, onSettingsClick: () -> Unit) {
 }
 
 @Composable
-private fun HoursCard(hours: Double, expected: Double) {
+private fun HoursCard(hours: Double, expected: Double, daysWorked: Int) {
     val progress = if (expected > 0.0) (hours / expected).toFloat().coerceIn(0f, 1f) else 0f
 
     Card(
@@ -212,6 +214,12 @@ private fun HoursCard(hours: Double, expected: Double) {
                     .padding(top = 12.dp)
                     .height(8.dp)
             )
+            Text(
+                text = if (daysWorked == 1) "1 día trabajado" else "$daysWorked días trabajados",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 }
@@ -219,6 +227,7 @@ private fun HoursCard(hours: Double, expected: Double) {
 @Composable
 private fun SalaryCard(
     breakdown: SalaryBreakdown?,
+    extrasPay: Double,
     visible: Boolean,
     onToggleVisible: () -> Unit
 ) {
@@ -234,7 +243,7 @@ private fun SalaryCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "Estimación sueldo bruto",
                     fontSize = 13.sp,
@@ -252,6 +261,12 @@ private fun SalaryCard(
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 if (breakdown != null && visible) {
+                    Text(
+                        text = "+ ${formatCurrency(extrasPay)} en pluses este mes",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
                     Text(
                         text = "≈ ${formatCurrency(breakdown.netTotal)} líquido",
                         fontSize = 12.sp,

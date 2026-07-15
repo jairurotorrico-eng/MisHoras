@@ -15,9 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.LightMode
-import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jairo.calendariotrabajo.data.model.Shift
+import com.jairo.calendariotrabajo.ui.common.iconForShift
 
 @Composable
 fun OnboardingScreen(
@@ -125,21 +123,21 @@ private fun OnboardingContent(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ShiftChip(
-                icon = Icons.Outlined.WbSunny,
+                icon = iconForShift(Shift.MANANA),
                 label = "Mañana",
                 selected = state.selectedShift == Shift.MANANA,
                 onClick = { onSelectShift(Shift.MANANA) },
                 modifier = Modifier.weight(1f)
             )
             ShiftChip(
-                icon = Icons.Outlined.LightMode,
+                icon = iconForShift(Shift.TARDE),
                 label = "Tarde",
                 selected = state.selectedShift == Shift.TARDE,
                 onClick = { onSelectShift(Shift.TARDE) },
                 modifier = Modifier.weight(1f)
             )
             ShiftChip(
-                icon = Icons.Outlined.DarkMode,
+                icon = iconForShift(Shift.NOCHE),
                 label = "Noche",
                 selected = state.selectedShift == Shift.NOCHE,
                 onClick = { onSelectShift(Shift.NOCHE) },
