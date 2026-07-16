@@ -6,16 +6,17 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.jairo.calendariotrabajo.data.preferences.AppPreferences
+import com.jairo.calendariotrabajo.data.repository.ShiftPatternRepository
 import com.jairo.calendariotrabajo.notifications.ReminderScheduler
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val appPreferences: AppPreferences,
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    private val shiftPatternRepository: ShiftPatternRepository
 ) : ViewModel() {
 
     val notificationsEnabled: StateFlow<Boolean> = appPreferences.notificationsEnabled
@@ -24,8 +25,7 @@ class SettingsViewModel(
     fun setNotificationsEnabled(enabled: Boolean) = viewModelScope.launch {
         appPreferences.setNotificationsEnabled(enabled)
         if (enabled) {
-            val hour = appPreferences.reminderHour.first()
-            reminderScheduler.schedule(hour = hour)
+            reminderScheduler.scheduleNext(shiftPatternRepository)
         } else {
             reminderScheduler.cancel()
         }
@@ -34,10 +34,11 @@ class SettingsViewModel(
     companion object {
         fun factory(
             appPreferences: AppPreferences,
-            reminderScheduler: ReminderScheduler
+            reminderScheduler: ReminderScheduler,
+            shiftPatternRepository: ShiftPatternRepository
         ): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                SettingsViewModel(appPreferences, reminderScheduler)
+                SettingsViewModel(appPreferences, reminderScheduler, shiftPatternRepository)
             }
         }
     }

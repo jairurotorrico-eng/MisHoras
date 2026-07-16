@@ -100,7 +100,8 @@ fun AppNavGraph(
             val settingsViewModel: SettingsViewModel = viewModel(
                 factory = SettingsViewModel.factory(
                     appPreferences = app.appPreferences,
-                    reminderScheduler = app.reminderScheduler
+                    reminderScheduler = app.reminderScheduler,
+                    shiftPatternRepository = app.shiftPatternRepository
                 )
             )
             SettingsScreen(

@@ -1,32 +1,46 @@
 package com.jairo.calendariotrabajo.notifications
 
 import android.content.Context
-import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.workDataOf
+import com.jairo.calendariotrabajo.data.repository.ShiftPatternRepository
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 class ReminderScheduler(private val context: Context) {
 
-    fun schedule(hour: Int = 20, minute: Int = 0) {
-        if (TEST_MODE) {
-            scheduleTestOneMinute()
+    // Calcula el próximo aviso según el turno y encola el worker para esa hora.
+    // Se llama al activar notificaciones, al arrancar la app y al final de cada worker (cadena).
+    suspend fun scheduleNext(shiftPatternRepository: ShiftPatternRepository) {
+        val pattern = shiftPatternRepository.get()
+        val now = LocalDateTime.now()
+
+        val delayMs = if (pattern == null) {
+            // Sin patrón aún: revisamos en 12h por si se configura entre medias.
+            Duration.ofHours(12).toMillis()
         } else {
-            schedulePeriodic(hour, minute)
+            val next = ReminderPlanner().nextSlotAfter(now) { day ->
+                shiftPatternRepository.expectedShiftFor(day, pattern)
+            }
+            next?.let { Duration.between(now, it.time).toMillis() }
+                ?: Duration.ofHours(12).toMillis()
         }
+
+        enqueue(delayMs.coerceAtLeast(0))
     }
 
     fun cancel() {
         WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
     }
 
-    private fun scheduleTestOneMinute() {
+    // Para probar sin esperar a una hora concreta: dispara el worker en 10s forzando la notificación.
+    fun scheduleDebugFireNow() {
         val request = OneTimeWorkRequestBuilder<ReminderWorker>()
-            .setInitialDelay(1, TimeUnit.MINUTES)
+            .setInitialDelay(10, TimeUnit.SECONDS)
+            .setInputData(workDataOf(KEY_FORCE to true))
             .build()
         WorkManager.getInstance(context).enqueueUniqueWork(
             WORK_NAME,
@@ -35,29 +49,19 @@ class ReminderScheduler(private val context: Context) {
         )
     }
 
-    private fun schedulePeriodic(hour: Int, minute: Int) {
-        val delayMs = millisUntilNext(hour, minute)
-        val request = PeriodicWorkRequestBuilder<ReminderWorker>(24, TimeUnit.HOURS)
+    private fun enqueue(delayMs: Long) {
+        val request = OneTimeWorkRequestBuilder<ReminderWorker>()
             .setInitialDelay(delayMs, TimeUnit.MILLISECONDS)
             .build()
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+        WorkManager.getInstance(context).enqueueUniqueWork(
             WORK_NAME,
-            ExistingPeriodicWorkPolicy.UPDATE,
+            ExistingWorkPolicy.REPLACE,
             request
         )
     }
 
-    private fun millisUntilNext(hour: Int, minute: Int): Long {
-        val now = LocalDateTime.now()
-        val target = now.withHour(hour).withMinute(minute).withSecond(0).withNano(0)
-        val next = if (target.isBefore(now) || target.isEqual(now)) target.plusDays(1) else target
-        return Duration.between(now, next).toMillis()
-    }
-
     companion object {
         const val WORK_NAME = "mishoras_daily_reminder"
-
-        // Cambiamos a false cunado terminamos de comprobar que las notificaciones funcionan
-        private const val TEST_MODE = false
+        const val KEY_FORCE = "force_fire"
     }
 }

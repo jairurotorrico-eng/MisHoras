@@ -27,7 +27,10 @@ object NotificationHelper {
         manager?.createNotificationChannel(channel)
     }
 
-    fun showReminder(context: Context) {
+    fun showReminder(
+        context: Context,
+        message: String = "¿Trabajaste hoy? Toca para apuntar tus horas."
+    ) {
         ensureChannel(context)
 
         val intent = Intent(context, MainActivity::class.java).apply {
@@ -43,7 +46,7 @@ object NotificationHelper {
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("MisHoras")
-            .setContentText("¿Trabajaste hoy? Toca para apuntar tus horas.")
+            .setContentText(message)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

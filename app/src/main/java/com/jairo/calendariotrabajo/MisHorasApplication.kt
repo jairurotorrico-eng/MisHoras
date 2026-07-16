@@ -53,9 +53,8 @@ class MisHorasApplication : Application() {
             workDayRepository.pruneOlderThan(monthsToKeep = 6)
 
             val enabled = appPreferences.notificationsEnabled.first()
-            val hour = appPreferences.reminderHour.first()
             if (enabled) {
-                reminderScheduler.schedule(hour = hour)
+                reminderScheduler.scheduleNext(shiftPatternRepository)
             }
         }
     }
