@@ -42,6 +42,8 @@ class HomeViewModel(
         val workedList = workDays.filter { it.didWork }
         val hoursWorked = workedList.sumOf { it.hours }
         val daysWorked = workedList.size
+        // Cuántos días de cada turno: agrupa por turno y cuenta
+        val daysByShift = workedList.mapNotNull { it.shift }.groupingBy { it }.eachCount()
         val breakdown = rates?.let { calculator.calculate(workDays, it) }
         val extrasPay = breakdown?.let {
             it.extraHoursPay + it.nightPlusPay + it.sundaysPay + it.formationPay
@@ -56,6 +58,7 @@ class HomeViewModel(
             expectedMonthlyHours = expected,
             daysWorked = daysWorked,
             extrasPay = extrasPay,
+            daysByShift = daysByShift,
             salaryBreakdown = breakdown,
             loading = false
         )

@@ -81,7 +81,8 @@ class HistoryViewModel(
             monthLabel = formatHistoryYearMonth(ym),
             daysWorked = workedDays.size,
             hoursTotal = workedDays.sumOf { it.hours },
-            grossSalary = gross
+            grossSalary = gross,
+            daysByShift = workedDays.mapNotNull { it.shift }.groupingBy { it }.eachCount()
         )
     }
 

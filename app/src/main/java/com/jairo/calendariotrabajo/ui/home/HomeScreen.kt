@@ -37,7 +37,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jairo.calendariotrabajo.data.model.Shift
 import com.jairo.calendariotrabajo.domain.calculator.SalaryBreakdown
+import com.jairo.calendariotrabajo.ui.common.iconForShift
+import com.jairo.calendariotrabajo.ui.common.labelForShift
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.util.Locale
@@ -86,7 +89,8 @@ private fun HomeContent(
         HoursCard(
             hours = uiState.hoursThisMonth,
             expected = uiState.expectedMonthlyHours,
-            daysWorked = uiState.daysWorked
+            daysWorked = uiState.daysWorked,
+            daysByShift = uiState.daysByShift
         )
 
         SalaryCard(
@@ -175,7 +179,12 @@ private fun HomeHeader(monthLabel: String, onSettingsClick: () -> Unit) {
 }
 
 @Composable
-private fun HoursCard(hours: Double, expected: Double, daysWorked: Int) {
+private fun HoursCard(
+    hours: Double,
+    expected: Double,
+    daysWorked: Int,
+    daysByShift: Map<Shift, Int>
+) {
     val progress = if (expected > 0.0) (hours / expected).toFloat().coerceIn(0f, 1f) else 0f
 
     Card(
@@ -220,6 +229,39 @@ private fun HoursCard(hours: Double, expected: Double, daysWorked: Int) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp)
             )
+            ShiftBreakdownRow(
+                daysByShift = daysByShift,
+                modifier = Modifier.padding(top = 10.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ShiftBreakdownRow(
+    daysByShift: Map<Shift, Int>,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(18.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Shift.entries.forEach { shift ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = iconForShift(shift),
+                    contentDescription = labelForShift(shift),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(15.dp)
+                )
+                Text(
+                    text = " ${daysByShift[shift] ?: 0}",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }

@@ -29,6 +29,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jairo.calendariotrabajo.data.model.Shift
+import com.jairo.calendariotrabajo.ui.common.iconForShift
+import com.jairo.calendariotrabajo.ui.common.labelForShift
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -162,6 +165,41 @@ private fun CurrentMonthCard(month: MonthSummaryData) {
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
+            ShiftBreakdownRow(
+                daysByShift = month.daysByShift,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.padding(top = 14.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ShiftBreakdownRow(
+    daysByShift: Map<Shift, Int>,
+    contentColor: androidx.compose.ui.graphics.Color,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(18.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Shift.entries.forEach { shift ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = iconForShift(shift),
+                    contentDescription = labelForShift(shift),
+                    tint = contentColor.copy(alpha = 0.75f),
+                    modifier = Modifier.size(15.dp)
+                )
+                Text(
+                    text = " ${daysByShift[shift] ?: 0}",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = contentColor
+                )
+            }
         }
     }
 }
@@ -217,7 +255,11 @@ private fun MonthRow(month: MonthSummaryData) {
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "${month.daysWorked} días · ${month.hoursTotal.roundToInt()} h",
+                text = buildString {
+                    append("${month.daysWorked} días · ${month.hoursTotal.roundToInt()} h")
+                    val nights = month.daysByShift[Shift.NOCHE] ?: 0
+                    if (nights > 0) append(" · $nights noches")
+                },
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 2.dp)

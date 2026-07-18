@@ -1,5 +1,6 @@
 package com.jairo.calendariotrabajo.ui.history
 
+import com.jairo.calendariotrabajo.data.model.Shift
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -25,7 +26,8 @@ data class MonthSummaryData(
     val monthLabel: String,
     val daysWorked: Int,
     val hoursTotal: Double,
-    val grossSalary: Double
+    val grossSalary: Double,
+    val daysByShift: Map<Shift, Int> = emptyMap()
 )
 
 data class TotalSummary(

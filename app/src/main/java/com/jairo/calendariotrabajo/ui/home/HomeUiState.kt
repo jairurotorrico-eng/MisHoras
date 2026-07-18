@@ -1,5 +1,6 @@
 package com.jairo.calendariotrabajo.ui.home
 
+import com.jairo.calendariotrabajo.data.model.Shift
 import com.jairo.calendariotrabajo.domain.calculator.SalaryBreakdown
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -13,6 +14,7 @@ data class HomeUiState(
     val expectedMonthlyHours: Double,
     val daysWorked: Int,
     val extrasPay: Double,
+    val daysByShift: Map<Shift, Int>,
     val salaryBreakdown: SalaryBreakdown?,
     val loading: Boolean = false
 ) {
@@ -25,6 +27,7 @@ data class HomeUiState(
             expectedMonthlyHours = 0.0,
             daysWorked = 0,
             extrasPay = 0.0,
+            daysByShift = emptyMap(),
             salaryBreakdown = null,
             loading = true
         )
