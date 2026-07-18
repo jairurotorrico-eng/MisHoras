@@ -55,6 +55,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     onBack: () -> Unit,
     onNavigateToRates: () -> Unit,
+    onNavigateToPattern: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -80,8 +81,8 @@ fun SettingsScreen(
             SettingsRow(
                 icon = Icons.Outlined.Repeat,
                 title = "Patrón de turnos",
-                subtitle = "Próximamente",
-                enabled = false
+                subtitle = "Mañana → Tarde → Noche · toca para ajustar",
+                onClick = onNavigateToPattern
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             SettingsRow(
@@ -104,8 +105,8 @@ fun SettingsScreen(
             SettingsToggleRow(
                 icon = Icons.Outlined.Notifications,
                 title = "Notificaciones",
-                subtitle = if (notificationsEnabled) "Activadas · aviso diario a las 20:00"
-                else "Aviso diario para no olvidar apuntar",
+                subtitle = if (notificationsEnabled) "Activadas · avisos según tu turno"
+                else "Avisos para no olvidar apuntar",
                 checked = notificationsEnabled,
                 onCheckedChange = { newValue ->
                     if (newValue) {

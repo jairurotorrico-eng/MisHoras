@@ -30,6 +30,8 @@ import com.jairo.calendariotrabajo.ui.settings.RatesEditScreen
 import com.jairo.calendariotrabajo.ui.settings.RatesEditViewModel
 import com.jairo.calendariotrabajo.ui.settings.SettingsScreen
 import com.jairo.calendariotrabajo.ui.settings.SettingsViewModel
+import com.jairo.calendariotrabajo.ui.settings.ShiftPatternEditScreen
+import com.jairo.calendariotrabajo.ui.settings.ShiftPatternEditViewModel
 import java.time.LocalDate
 
 //El NavHost decide que pantalla toca según la ruta
@@ -107,7 +109,22 @@ fun AppNavGraph(
             SettingsScreen(
                 viewModel = settingsViewModel,
                 onBack = { navController.popBackStack() },
-                onNavigateToRates = { navController.navigate(Routes.RATES) }
+                onNavigateToRates = { navController.navigate(Routes.RATES) },
+                onNavigateToPattern = { navController.navigate(Routes.SETTINGS_PATTERN) }
+            )
+        }
+
+        composable(Routes.SETTINGS_PATTERN) {
+            val patternViewModel: ShiftPatternEditViewModel = viewModel(
+                factory = ShiftPatternEditViewModel.factory(
+                    shiftPatternRepository = app.shiftPatternRepository,
+                    reminderScheduler = app.reminderScheduler,
+                    appPreferences = app.appPreferences
+                )
+            )
+            ShiftPatternEditScreen(
+                viewModel = patternViewModel,
+                onBack = { navController.popBackStack() }
             )
         }
 

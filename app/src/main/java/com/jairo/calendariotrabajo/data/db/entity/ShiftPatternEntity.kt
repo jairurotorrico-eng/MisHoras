@@ -9,5 +9,8 @@ import java.time.LocalDate
 data class ShiftPatternEntity(
     @PrimaryKey val id: Int = 1,
     val anchorWeekMonday: LocalDate,
-    val anchorShift: Shift
+    val anchorShift: Shift,
+    // Turnos que la persona hace. La rotación gira solo entre estos.
+    // Si solo hay uno, no rota: siempre ese turno.
+    val activeShifts: List<Shift> = listOf(Shift.MANANA, Shift.TARDE, Shift.NOCHE)
 )

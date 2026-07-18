@@ -23,7 +23,7 @@ import com.jairo.calendariotrabajo.data.db.entity.WorkDayEntity
         ShiftPatternEntity::class,
         HolidayEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 
@@ -48,7 +48,8 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "mishoras.db"
-                ).build().also { INSTANCE = it } //also es una funcion scope (ámbito) de kotlin, coge el objeto que tiene delante, el cual ajecuta dentro de {} como it y luego devuelve el mismo objeto sin modificarlo
+                ).addMigrations(MIGRATION_1_2)
+                    .build().also { INSTANCE = it } //also es una funcion scope (ámbito) de kotlin, coge el objeto que tiene delante, el cual ajecuta dentro de {} como it y luego devuelve el mismo objeto sin modificarlo
             }                                    //Aquí se usa como un atajo para "de paso que construyo la base de datos, aprovecho para guardarla en INSTANCE, y
                                             // luego sigo devolviendo la base de datos como resultado de la función"
         }

@@ -19,8 +19,13 @@ class ShiftPatternRepository(private val shiftPatternDao: ShiftPatternDao) {
     suspend fun set(pattern: ShiftPatternEntity) = shiftPatternDao.upsert(pattern)
 //aqui el calculo
     fun expectedShiftFor(date: LocalDate, pattern: ShiftPatternEntity): Shift {
-        val rotation = listOf(Shift.TARDE, Shift.NOCHE, Shift.MANANA) //Definimos el ciclo
-        val anchorIdx = rotation.indexOf(pattern.anchorShift)//guarda el ancla de una semana conocida que turno
+        // El ciclo son SOLO los turnos que la persona hace, en orden canónico
+        // (mañana -> tarde -> noche). Si hace uno solo, no hay rotación.
+        val rotation = Shift.entries.filter { it in pattern.activeShifts }
+        if (rotation.isEmpty()) return pattern.anchorShift
+        if (rotation.size == 1) return rotation.first()
+
+        val anchorIdx = rotation.indexOf(pattern.anchorShift).coerceAtLeast(0)
         val targetMonday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
         val weeksElapsed = ChronoUnit.WEEKS.between(pattern.anchorWeekMonday, targetMonday).toInt()
         val targetIdx = ((anchorIdx + weeksElapsed) % rotation.size + rotation.size) % rotation.size

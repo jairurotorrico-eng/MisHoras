@@ -16,6 +16,14 @@ class Converters {
     @TypeConverter
     fun stringToLocalDate(value: String?): LocalDate? = value?.let(LocalDate::parse)
 
+    // Una lista de turnos se guarda como texto: "MANANA,TARDE,NOCHE"
+    @TypeConverter
+    fun shiftListToString(value: List<Shift>?): String? = value?.joinToString(",") { it.name }
+
+    @TypeConverter
+    fun stringToShiftList(value: String?): List<Shift>? =
+        value?.split(",")?.filter { it.isNotBlank() }?.map { Shift.valueOf(it) }
+
     @TypeConverter
     fun shiftToString(value: Shift?): String? = value?.name
 

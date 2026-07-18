@@ -145,9 +145,9 @@ private fun RatesEditContent(
             onClick = onSave,
             enabled = !state.saving,
             modifier = Modifier
+                .padding(top = 12.dp)
                 .fillMaxWidth()
                 .height(56.dp)
-                .padding(top = 12.dp)
         ) {
             Text(
                 text = "Guardar cambios",
