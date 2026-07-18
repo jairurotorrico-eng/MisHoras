@@ -15,6 +15,8 @@ data class DayDetailUiState(
     val isHoliday: Boolean = false,
     val isFullExtraDay: Boolean = false,
     val autoHoliday: Boolean = false,
+    // true si la app ha detectado que este día supera el tope semanal
+    val autoFullExtra: Boolean = false,
     val dayExtraPay: Double = 0.0,
     val existed: Boolean = false,
     val loading: Boolean = true,

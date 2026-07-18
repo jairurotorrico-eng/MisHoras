@@ -21,6 +21,9 @@ class WorkDayRepository(private val workDayDao: WorkDayDao) {
     suspend fun getByDate(date: LocalDate): WorkDayEntity? =
         workDayDao.getByDate(date)
 
+    suspend fun getRange(start: LocalDate, end: LocalDate): List<WorkDayEntity> =
+        workDayDao.getRange(start, end)
+
     suspend fun getMonth(year: Int, month: Int): List<WorkDayEntity> {
         val start = LocalDate.of(year, month, 1)
         val end = start.plusMonths(1).minusDays(1)

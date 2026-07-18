@@ -108,6 +108,7 @@ private fun DayDetailContent(
             isHoliday = state.isHoliday,
             isFullExtraDay = state.isFullExtraDay,
             autoHoliday = state.autoHoliday,
+            autoFullExtra = state.autoFullExtra,
             onSetHoliday = onSetHoliday,
             onSetFullExtraDay = onSetFullExtraDay
         )
@@ -304,6 +305,7 @@ private fun SpecialFlagsCard(
     isHoliday: Boolean,
     isFullExtraDay: Boolean,
     autoHoliday: Boolean,
+    autoFullExtra: Boolean,
     onSetHoliday: (Boolean) -> Unit,
     onSetFullExtraDay: (Boolean) -> Unit
 ) {
@@ -324,7 +326,8 @@ private fun SpecialFlagsCard(
             SwitchRow(
                 icon = Icons.Outlined.Star,
                 title = "Día completo extra",
-                subtitle = "Todas las horas como extra",
+                subtitle = if (autoFullExtra) "Detectado: superas el tope semanal"
+                else "Todas las horas como extra",
                 checked = isFullExtraDay,
                 onCheckedChange = onSetFullExtraDay
             )

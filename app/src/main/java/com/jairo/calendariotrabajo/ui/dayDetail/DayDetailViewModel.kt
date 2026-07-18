@@ -12,6 +12,7 @@ import com.jairo.calendariotrabajo.data.repository.HolidayRepository
 import com.jairo.calendariotrabajo.data.repository.SalaryRatesRepository
 import com.jairo.calendariotrabajo.data.repository.ShiftPatternRepository
 import com.jairo.calendariotrabajo.data.repository.WorkDayRepository
+import com.jairo.calendariotrabajo.domain.rules.ExtraDayRules
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
 
 class DayDetailViewModel(
     private val date: LocalDate,
@@ -47,14 +49,30 @@ class DayDetailViewModel(
         } ?: Shift.MANANA
         currentRates = rates
 
+        // ¿Este día supera el tope semanal? Miramos los días ya trabajados
+        // de su misma semana (lunes a domingo).
+        val monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val weekWorkDays = workDayRepository.getRange(monday, monday.plusDays(6))
+        val autoFullExtra = ExtraDayRules.shouldBeFullExtraDay(
+            date = date,
+            weekWorkDays = weekWorkDays,
+            standardDaysPerWeek = ExtraDayRules.standardDaysPerWeek(
+                maxWeeklyHours = rates.maxWeeklyHours,
+                standardDayHours = rates.standardDayHours
+            )
+        )
+
         _uiState.update { current ->
             current.copy(
                 didWork = existing?.didWork ?: true,
                 shift = existing?.shift ?: defaultShift,
                 hours = existing?.hours ?: rates.standardDayHours.toDouble(),
                 isHoliday = existing?.isHoliday ?: isHolidayAuto,
-                isFullExtraDay = existing?.isFullExtraDay ?: false,
+                // Si el día ya estaba guardado respetamos lo que eligió el usuario;
+                // si es nuevo, lo activamos solo cuando toca por la regla semanal.
+                isFullExtraDay = existing?.isFullExtraDay ?: autoFullExtra,
                 autoHoliday = isHolidayAuto,
+                autoFullExtra = autoFullExtra,
                 existed = existing != null,
                 loading = false
             )
